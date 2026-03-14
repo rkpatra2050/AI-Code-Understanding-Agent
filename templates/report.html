@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Code Analysis: {{ filename }}</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #0f1117;
+      color: #e2e8f0;
+      line-height: 1.7;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1a1f36 0%, #0d1117 100%);
+      border-bottom: 1px solid #2d3748;
+      padding: 2rem 3rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .logo {
+      font-size: 2.5rem;
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, #7c3aed, #3b82f6, #06b6d4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    header p {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      margin-top: 0.2rem;
+    }
+
+    .badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #7c3aed, #3b82f6);
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.25rem 0.8rem;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-left: auto;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 2.5rem auto;
+      padding: 0 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .card {
+      background: #1a1f36;
+      border: 1px solid #2d3748;
+      border-radius: 16px;
+      padding: 2rem;
+      transition: border-color 0.2s;
+    }
+
+    .card:hover {
+      border-color: #4a5568;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .card-icon {
+      font-size: 1.5rem;
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #f1f5f9;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* Summary Card */
+    .summary-text {
+      font-size: 1.05rem;
+      color: #cbd5e1;
+      line-height: 1.8;
+    }
+
+    /* Analogy Card */
+    .analogy-box {
+      background: linear-gradient(135deg, #1e1b4b 0%, #1a1f36 100%);
+      border: 1px solid #4c1d95;
+      border-radius: 12px;
+      padding: 1.5rem;
+      font-size: 1rem;
+      color: #c4b5fd;
+      line-height: 1.8;
+      position: relative;
+    }
+
+    .analogy-box::before {
+      content: '"';
+      font-size: 5rem;
+      color: #4c1d95;
+      position: absolute;
+      top: -1rem;
+      left: 1rem;
+      font-family: Georgia, serif;
+      line-height: 1;
+    }
+
+    .analogy-text {
+      margin-top: 1rem;
+    }
+
+    /* Key Concepts */
+    .concepts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1rem;
+    }
+
+    .concept-item {
+      background: #0f1117;
+      border: 1px solid #2d3748;
+      border-radius: 12px;
+      padding: 1.25rem;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .concept-item:hover {
+      transform: translateY(-2px);
+      border-color: #7c3aed;
+    }
+
+    .concept-name {
+      font-weight: 700;
+      color: #7c3aed;
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .concept-name::before {
+      content: '◆';
+      font-size: 0.6rem;
+    }
+
+    .concept-explanation {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .concept-analogy {
+      background: #1a1f36;
+      border-left: 3px solid #3b82f6;
+      padding: 0.6rem 0.8rem;
+      border-radius: 0 8px 8px 0;
+      color: #93c5fd;
+      font-size: 0.85rem;
+      font-style: italic;
+    }
+
+    /* Steps */
+    .steps-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .steps-list li {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+
+    .step-number {
+      background: linear-gradient(135deg, #7c3aed, #3b82f6);
+      color: white;
+      font-weight: 700;
+      font-size: 0.8rem;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    .step-text {
+      color: #cbd5e1;
+      font-size: 0.95rem;
+      padding-top: 0.1rem;
+    }
+
+    /* Diagram */
+    .diagram-wrapper {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 2rem;
+      overflow-x: auto;
+      display: flex;
+      justify-content: center;
+    }
+
+    .mermaid {
+      min-width: 300px;
+    }
+
+    /* Source Code */
+    .code-wrapper {
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .code-wrapper pre {
+      margin: 0;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      max-height: 500px;
+      overflow-y: auto;
+    }
+
+    /* Improvements */
+    .improvements-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .improvements-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      color: #86efac;
+      font-size: 0.95rem;
+    }
+
+    .improvements-list li::before {
+      content: '✦';
+      color: #22c55e;
+      flex-shrink: 0;
+      margin-top: 0.05rem;
+    }
+
+    footer {
+      text-align: center;
+      color: #475569;
+      font-size: 0.85rem;
+      padding: 2rem;
+      border-top: 1px solid #1e293b;
+      margin-top: 2rem;
+    }
+
+    footer span {
+      color: #7c3aed;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🤖</div>
+  <div>
+    <h1>AI Code Understanding Agent</h1>
+    <p>Analysis for <strong>{{ filename }}</strong> &nbsp;·&nbsp; Generated {{ generated_at }}</p>
+  </div>
+  <span class="badge">{{ language }}</span>
+</header>
+
+<main>
+
+  <!-- Summary -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-icon">📋</span>
+      <span class="card-title">Summary</span>
+    </div>
+    <p class="summary-text">{{ summary }}</p>
+  </div>
+
+  <!-- Real World Analogy -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-icon">🌍</span>
+      <span class="card-title">Real-World Analogy</span>
+    </div>
+    <div class="analogy-box">
+      <p class="analogy-text">{{ real_world_analogy }}</p>
+    </div>
+  </div>
+
+  <!-- Mermaid Diagram -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-icon">🗺️</span>
+      <span class="card-title">Diagram ({{ mermaid_diagram_type }})</span>
+    </div>
+    <div class="diagram-wrapper">
+      <div class="mermaid">
+{{ mermaid_diagram }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Key Concepts -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-icon">💡</span>
+      <span class="card-title">Key Concepts</span>
+    </div>
+    <div class="concepts-grid">
+      {% for concept in key_concepts %}
+      <div class="concept-item">
+        <div class="concept-name">{{ concept.name }}</div>
+        <p class="concept-explanation">{{ concept.explanation }}</p>
+        <div class="concept-analogy">{{ concept.analogy }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Step-by-Step Walkthrough -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-icon">🚶</span>
+      <span class="card-title">Step-by-Step Walkthrough</span>
+    </div>
+    <ol class="steps-list">
+      {% for step in step_by_step %}
+      <li>
+        <span class="step-number">{{ loop.index }}</span>
+        <span class="step-text">{{ step }}</span>
+      </li>
+      {% endfor %}
+    </ol>
+  </div>
+
+  <!-- Source Code -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-icon">💻</span>
+      <span class="card-title">Source Code</span>
+    </div>
+    <div class="code-wrapper">
+      <pre><code class="{{ language | lower }}">{{ source_code | e }}</code></pre>
+    </div>
+  </div>
+
+  <!-- Potential Improvements -->
+  {% if potential_improvements %}
+  <div class="card">
+    <div class="card-header">
+      <span class="card-icon">🚀</span>
+      <span class="card-title">Potential Improvements</span>
+    </div>
+    <ul class="improvements-list">
+      {% for item in potential_improvements %}
+      <li>{{ item }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+</main>
+
+<footer>
+  Generated by <span>AI Code Understanding Agent</span> &nbsp;·&nbsp; Powered by Google Gemini
+</footer>
+
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: 'default' });
+  hljs.highlightAll();
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Run AI Code Agent",
+			"type": "shell",
+			"command": "\"/Users/rohitworld/Documents/AI AGENT/.venv/bin/python\" main.py",
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		}
+	]
+}
