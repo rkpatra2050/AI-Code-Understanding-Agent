@@ -33,7 +33,7 @@ class Stack:
 
 
 def reverse_string(s: str) -> str:
-    """Reverse a string usioujbding a stack."""
+    """Reverse a string usioujbding a staddwck."""
     stack = Stack()
     for char in s:
         stack.push(char)
